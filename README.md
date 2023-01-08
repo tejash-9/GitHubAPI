@@ -12,11 +12,13 @@ This app allows users to authenticate with their GitHub account and create a new
 3. Install the dependencies: `npm install`
 4. Create a new OAuth application on GitHub and copy the client id and client secret.
 5. Create a file named .env in the root of the project and add the following lines:
+
     CLIENT_ID=YOUR_CLIENT_ID
     
     CLIENT_SECRET=YOUR_CLIENT_SECRET
     
     JWT_SECRET=YOUR_JWT_SECRET
+    
 6. Replace YOUR_CLIENT_ID and YOUR_CLIENT_SECRET with the values copied from GitHub, and generate a random string manually or using random string generator to replace it with YOUR_JWT_SECRET.
 7. Start the app: `npm start`
 8. Open http://localhost:8000 in your browser
