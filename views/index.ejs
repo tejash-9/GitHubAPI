@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>GitHub API Intergration</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <style>
+       body {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 100vh;
+      }
+
+      button {
+        padding: 10px 20px;
+        font-size: 16px;
+        border: none;
+        border-radius: 4px;
+        margin: 20px;
+        cursor: pointer;
+      }
+
+      #authorize-github {
+        background-color: #222;
+        color: #fff;
+      }
+      .success-message {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        background-color: green;
+        font-size: 18px;
+        padding: 20px;
+        border-radius: 5px;
+      }
+
+      #create-repo {
+        background-color: #fff;
+        color: #222;
+      }
+      .about-me-container {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 20px 0;
+      }
+
+      .about-me-button {
+        background-color: #3498db;
+        border: none;
+        color: white;
+        padding: 10px 20px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 16px;
+        cursor: pointer;
+        transition: all 0.5s ease;
+        box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+      }
+
+      .about-me-button:hover {
+        background-color: #2980b9;
+        box-shadow: 0 6px 12px 0 rgba(0,0,0,0.2);
+      }
+
+      .about-me-button:active {
+        color: grey;
+      }
+
+      .about-me-profile {
+        display: none;
+        width: 50%;
+        margin: 0 auto;
+        text-align: center;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        background-color: #f8f9fa;
+      }
+
+      .about-me-profile h1 {
+        margin-bottom: 20px;
+        font-size: 2em;
+        font-weight: bold;
+        text-transform: uppercase;
+        color: #343a40;
+      }
+
+      .about-me-profile .links a {
+        display: inline-block;
+        margin: 0 5px;
+        font-size: 1.5em;
+        color: #6c757d;
+      }
+
+      .about-me-profile .links a:hover {
+        color: #007bff;
+      }
+
+      .about-me-profile p {
+        font-size: 1.2em;
+        line-height: 1.5;
+        color: #212529;
+      }
+
+      .about-me-profile a {
+        color: #007bff;
+      }
+
+      .about-me-profile a:hover {
+        text-decoration: underline;
+      }
+
+      .about-me-profile ul {
+        list-style: none;
+        padding: 0;
+      }
+
+      .about-me-profile li {
+        display: block;
+        padding: 10px;
+        margin: 10px 0;
+        background-color: #f4f4f4;
+        border: 1px solid #ccc;
+      }
+
+      .about-me-button:hover + .about-me-profile, .about-me-profile:hover {
+        display: block;
+      }
+      .profile-button {
+        background-color: transparent;
+        border: none;
+        cursor: pointer;
+        padding: 0;
+      }
+
+      .profile-button a {
+        color: #000;
+        text-decoration: none;
+      }
+
+      .profile-button:hover a {
+        color: #999;
+      }
+
+
+      #error-message {
+        display: none;
+        position: absolute;
+        top: 40px;
+        right: 10px;
+        background-color: white;
+        border: 1px solid red;
+        border-radius: 5px;
+        padding: 20px;
+        width: 300px;
+        color: red;
+        font-weight: bold;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="success-message" id="success-message" style="display: none;">
+      Repository created successfully!
+    </div>
+    <div id="error-message">
+      <p>An error occurred while creating the repository. Please check the authentication and try again.</p>
+    </div>
+    <div class="about-me-container">
+      <button class="about-me-button">About Me</button>
+      <div class="about-me-profile">
+        <h1 id="name">About me</h1>
+        <div class="links">
+          <a href="https://github.com/tejash-9" target="_blank">
+            <i class="fa fa-github" aria-hidden="true"></i>
+          </a>
+          <a href="https://www.linkedin.com/in/tejashwi-raj-3798b1212/" target="_blank">
+            <i class="fa fa-linkedin" aria-hidden="true"></i>
+          </a>
+          <a href="mailto:999tejashwi@gmail.com" target="_blank">
+            <i class="fa fa-envelope" aria-hidden="true"></i>
+          </a>
+        </div>
+      
+        <p>Hi, I'm Tejashwi Raj. I am a final-year undergraduate from IIT Kharagpur. I love problem-solving and have experience with a variety of programming languages and frameworks. I'm always looking to learn and improve my skills.</p>
+        <h3>What makes me perfect for this role?</h3>
+        <ul>
+          <li>Strong programming skills and experience in backend development</li>
+          <li>Good understanding of data structures and algorithms</li>
+          <li>Good communication and teamwork skills</li>
+          <li>Dedication and commitment</li>
+        </ul>
+      </div>
+    </div>
+    <button id="authorize-github">Authorize GitHub</button>
+    <button id="create-repo">Create Repository</button>
+
+    <script>
+      const authorizeGitHubButton = document.getElementById('authorize-github');
+      const createRepoButton = document.getElementById('create-repo');
+
+      authorizeGitHubButton.addEventListener('click', () => {
+        window.location.href = '/auth';
+      });
+      createRepoButton.addEventListener('click', async () => {
+        const repoName = prompt('Enter the name of the repository to create:');
+        const accessToken = new URLSearchParams(window.location.search).get('id');
+        const config = {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            'Content-Type': 'application/json',
+          },
+        };
+        try {
+          const response = await fetch('/repos', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${accessToken}`,
+            },
+            body: JSON.stringify({ repoName }),
+          });
+          if (response.ok) {
+            const fileResponse = await fetch('/repos/file', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${accessToken}`,
+              },
+              body: JSON.stringify({repoName}),
+            });
+            const successMessage = document.getElementById('success-message');
+            successMessage.style.display = 'flex';
+          } else {
+            const errorMessage = document.getElementById('error-message');
+            errorMessage.style.display = 'flex';
+          }
+        } catch (error) {
+          console.log(error);
+        }
+      });
+      
+    </script>
+  </body>
+</html>
